@@ -1,14 +1,46 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vmustone <vmustone@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/07 12:51:45 by vmustone          #+#    #+#             */
+/*   Updated: 2023/02/13 13:46:54 by vmustone         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <mlx.h>
 #include <math.h>
 #include <stdlib.h>
-#include <stdio.h>
 
-typedef struct	s_vars {
+typedef struct	s_mandel
+{
+	unsigned		y;
+	unsigned		x;
+	unsigned		n;
+	int				inside;
+	unsigned int	color;
+	double			MinRe;
+	double			MaxRe;
+	double			MinIm;
+	double			MaxIm;
+	double			Re_factor;
+	double			Im_factor;
+	double			c_re;
+	double			c_im;
+	double			z_re;
+	double			z_im;
+	double			z_re2;
+	double			z_im2;
+	int				maxiterations;
+}				t_mandel;
+
+
+typedef struct	s_data
+{
 	void	*mlx;
 	void	*win;
-}				t_vars;
-
-typedef struct	s_data {
 	void	*img;
 	char	*addr;
 	int		bits_per_pixel;
@@ -16,17 +48,20 @@ typedef struct	s_data {
 	int		endian;
 }				t_data;
 
-int	close(int keycode, t_vars *vars)
+int	close_esc(int key, t_data *data)
 {
-	mlx_destroy_window(vars->mlx, vars->win);
-	exit(0);
+	if (key == 53)
+	{
+		mlx_destroy_window(data->mlx, data->win);
+		exit (0);
+	}
 	return (0);
 }
 
-int	key_hook(int keycode, t_vars *vars)
+int close_red_cross(t_data *data)
 {
-	printf("Hello from key_hook!\n");
-	close(2, vars);
+	mlx_destroy_window(data->mlx, data->win);
+	exit (0);
 	return (0);
 }
 
@@ -40,9 +75,9 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 
 void	draw_mandelbrot(t_data *data)
 {
-	unsigned	y = 0;
-	unsigned	x = 0;
-	unsigned	n;
+	int	y = 0;
+	int	x = 0;
+	int	n;
 	int		inside;
 	unsigned int	color = 0x00000000;
 	double	MinRe = -2.0;
@@ -57,7 +92,7 @@ void	draw_mandelbrot(t_data *data)
 	double	z_im;
 	double	z_re2;
 	double	z_im2;
-	int		maxiterations = 30;
+	int		maxiterations = 1000;
 	while (y < 800)
 	{
 		c_im = MaxIm - y * Im_factor;
@@ -84,12 +119,10 @@ void	draw_mandelbrot(t_data *data)
 		}
 		if (!inside)
 		{
-			if (n < maxiterations * 0.6)
+			if (n < maxiterations * 0.3)
 				color = 0x00FFFFFF;
-			if (n == maxiterations || n > maxiterations * 0.6)
+			if (n == maxiterations || n > maxiterations * 0.02)
 				color = (n % 8) * 0x00CC0000;
-			else if (n < maxiterations * 0.5)
-				color = 0x00660000;
 			my_mlx_pixel_put(data, x, y, color);
 		}
 		else
@@ -100,17 +133,46 @@ void	draw_mandelbrot(t_data *data)
 	}
 }
 
+/*int	zoom(t_data *data)
+{
+	double	Minre = -2.0;
+	double	Maxre = 1.0;
+	double	Minim = -1.2;
+	double	Maxim = 1.2;
+	double	real;
+	double	imag;
+	double	x = 0;
+	double	y = 0;
+	double	c;
+	int		iterations = 0;
+
+	while (y < 800)
+	{
+		while (x < 800)
+		{
+			real = Minre + x / 800 * (Maxre - Minre);
+			imag = Minim + y / 800 * (Maxim - Minim);
+			c = real + imag * iterations;
+			iterations = draw_mandelbrot(data, 0.0, 0.0);
+			x++;
+		}
+		y++;
+	}
+	return (0);
+}
+*/
 int	main(void)
 {
-	t_data	img;
-	t_vars	vars;
-	int key = 0;
-	vars.mlx = mlx_init();
-	vars.win = mlx_new_window(vars.mlx, 800, 800, "fractol");
-	img.img = mlx_new_image(vars.mlx, 800, 800);
-	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
-	draw_mandelbrot(&img);
-	mlx_put_image_to_window(vars.mlx, vars.win, img.img, 0, 0);
-	mlx_key_hook(vars.win, key_hook, &vars);
-	mlx_loop(vars.mlx);
+	t_data	data;
+
+	data.mlx = mlx_init();
+	data.win = mlx_new_window(data.mlx, 800, 800, "fractol");
+	data.img = mlx_new_image(data.mlx, 800, 800);
+	data.addr = mlx_get_data_addr(data.img, &data.bits_per_pixel, &data.line_length, &data.endian);
+	draw_mandelbrot(&data);
+	mlx_put_image_to_window(data.mlx, data.win, data.img, 0, 0);
+	mlx_hook(data.win, 17, 0, close_red_cross, &data);
+	mlx_hook(data.win, 3, 0, close_esc, &data);
+	//mlx_hook(data.win, 4, 0, zoom, &data);
+	mlx_loop(data.mlx);
 }
