@@ -6,51 +6,27 @@
 /*   By: vmustone <vmustone@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 12:51:45 by vmustone          #+#    #+#             */
-/*   Updated: 2023/02/13 13:46:54 by vmustone         ###   ########.fr       */
+/*   Updated: 2023/02/17 16:53:21 by vmustone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <mlx.h>
-#include <math.h>
-#include <stdlib.h>
+#include "fractol.h"
 
-typedef struct	s_mandel
+void	declaration(t_data *value)
 {
-	unsigned		y;
-	unsigned		x;
-	unsigned		n;
-	int				inside;
-	unsigned int	color;
-	double			MinRe;
-	double			MaxRe;
-	double			MinIm;
-	double			MaxIm;
-	double			Re_factor;
-	double			Im_factor;
-	double			c_re;
-	double			c_im;
-	double			z_re;
-	double			z_im;
-	double			z_re2;
-	double			z_im2;
-	int				maxiterations;
-}				t_mandel;
+	value->y = 0;
+	value->x = 0;
+	value->minre = -2.0;
+	value->maxre = 1.0;
+	value->minim = -1.5;
+	value->maxim = 1.5; //value->minim + (value->maxre - value->minre) * WIDTH/HEIGHT;
+	value->re_factor = (value->maxre - value->minre)/(WIDTH - 1);
+	value->im_factor = (value->maxim - value->minim)/(HEIGHT - 1);
+}
 
-
-typedef struct	s_data
+int	close_esc(int keycode, t_vars *data)
 {
-	void	*mlx;
-	void	*win;
-	void	*img;
-	char	*addr;
-	int		bits_per_pixel;
-	int		line_length;
-	int		endian;
-}				t_data;
-
-int	close_esc(int key, t_data *data)
-{
-	if (key == 53)
+	if (keycode == ESC)
 	{
 		mlx_destroy_window(data->mlx, data->win);
 		exit (0);
@@ -58,14 +34,14 @@ int	close_esc(int key, t_data *data)
 	return (0);
 }
 
-int close_red_cross(t_data *data)
+int close_cross(t_vars *data)
 {
 	mlx_destroy_window(data->mlx, data->win);
 	exit (0);
 	return (0);
 }
 
-void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
+void	my_mlx_pixel_put(t_vars *data, int x, int y, int color)
 {
 	char	*dst;
 
@@ -73,38 +49,35 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 	*(unsigned int*)dst = color;
 }
 
-void	draw_mandelbrot(t_data *data)
+void	draw_mandelbrot(t_vars *vars)
 {
 	int	y = 0;
 	int	x = 0;
 	int	n;
 	int		inside;
 	unsigned int	color = 0x00000000;
-	double	MinRe = -2.0;
-	double	MaxRe = 1.0;
-	double	MinIm = -1.2;
-	double	MaxIm = MinIm + (MaxRe - MinRe) * 800/800;
-	double	Re_factor = (MaxRe - MinRe)/(800 - 1);
-	double	Im_factor = (MaxIm - MinIm)/(800 - 1);
 	double	c_re;
 	double	c_im;
 	double	z_re;
 	double	z_im;
 	double	z_re2;
 	double	z_im2;
-	int		maxiterations = 1000;
-	while (y < 800)
+	t_data	*d;
+	
+	d = vars->data;
+	
+	while (y < HEIGHT)
 	{
-		c_im = MaxIm - y * Im_factor;
+		c_im = d->maxim - y * d->im_factor;
 		x = 0;
-		while (x < 800)
+		while (x < WIDTH)
 		{
-			c_re = MinRe + x * Re_factor;
+			c_re = d->minre + x * d->re_factor;
 			z_re = c_re;
 			z_im = c_im;
 			inside = 1;
 			n = 0;
-		while (n <= maxiterations)
+		while (n <= MAX_ITER)
 		{
 			z_re2 = z_re * z_re;
 			z_im2 = z_im * z_im;
@@ -119,60 +92,104 @@ void	draw_mandelbrot(t_data *data)
 		}
 		if (!inside)
 		{
-			if (n < maxiterations * 0.3)
+			if (n < MAX_ITER * 0.5)
 				color = 0x00FFFFFF;
-			if (n == maxiterations || n > maxiterations * 0.02)
+			if (n == MAX_ITER || n > MAX_ITER * 0.3)
 				color = (n % 8) * 0x00CC0000;
-			my_mlx_pixel_put(data, x, y, color);
+			my_mlx_pixel_put(vars, x, y, color);
 		}
 		else
-			my_mlx_pixel_put(data, x, y, 0x00000000);
+			my_mlx_pixel_put(vars, x, y, 0x00000000);
 		x++;
 		}
 		y++;
 	}
+	mlx_put_image_to_window(vars->mlx, vars->win, vars->img, 0, 0);
 }
+/*
+void cursor_coordinate(int x, int y, t_data *data) 
+ { 
+    double mouse_x; 
+    double mouse_y; 
+    double midpoint; 
 
-/*int	zoom(t_data *data)
+    mouse_x = data->minre + (((data->maxre - data->minre) / WIDTH) * x);
+	mouse_y = data->minim + (((data->maxim - data->minim) / HEIGHT) * y);
+    midpoint = (data->maxre + data->minre) / 1.22;
+    data->minre += mouse_x - midpoint;
+    data->maxre += mouse_x - midpoint;
+    midpoint = (data->maxim + data->minim) / 1.2;
+    data->minim += mouse_y - midpoint;
+    data->maxim += mouse_y - midpoint;	
+ }
+*/
+int mouse_zoom(int button, int x, int y, t_vars *d)
 {
-	double	Minre = -2.0;
-	double	Maxre = 1.0;
-	double	Minim = -1.2;
-	double	Maxim = 1.2;
-	double	real;
-	double	imag;
-	double	x = 0;
-	double	y = 0;
-	double	c;
-	int		iterations = 0;
+	t_data	*zoom;
+	double	x_mouse;
+	double	y_mouse;
+	zoom = d->data;
+	x_mouse = x * zoom->re_factor + zoom->minre;
+	y_mouse = y * zoom->im_factor - zoom->minim;
 
-	while (y < 800)
+	zoom = d->data;
+	if (button == 1)
 	{
-		while (x < 800)
-		{
-			real = Minre + x / 800 * (Maxre - Minre);
-			imag = Minim + y / 800 * (Maxim - Minim);
-			c = real + imag * iterations;
-			iterations = draw_mandelbrot(data, 0.0, 0.0);
-			x++;
-		}
-		y++;
+		/*
+		xmouse on xskaalan uusi keskikohta
+		ymouse on yskaalan uusi keskikohta
+		laske nykyinen keskikohta
+		laske erot keskikohdasta
+		laita erot uuden keskikohdan mukaan
+		*/
+			
+		printf("%f\n%f\n", (HEIGHT -y) * zoom->im_factor + zoom->minim, x * zoom->re_factor + zoom->minre);
+	}
+	if (button == ON_MOUSEDOWN)
+	{
+		x = 0;
+		y = 0;
+		zoom->minre = ((double)x + zoom->minre) / 1.2;
+		zoom->maxre = ((double)x + zoom->maxre) / 1.2;
+		zoom->minim = ((double)y + zoom->minim) / 1.2;
+		zoom->maxim = zoom->minim + (zoom->maxre - zoom->minre) * WIDTH/HEIGHT;
+		zoom->re_factor = (zoom->maxre - zoom->minre)/(WIDTH - 1);
+		zoom->im_factor = (zoom->maxim - zoom->minim)/(HEIGHT - 1);
+		draw_mandelbrot(d);
+	}
+	if (button == ON_MOUSEUP)
+	{
+		zoom->minre *= 1.2;
+		zoom->maxre *= 1.2;
+		zoom->minim *= 1.2;
+		zoom->maxim = zoom->minim + (zoom->maxre - zoom->minre) * WIDTH/HEIGHT;
+		zoom->re_factor = (zoom->maxre - zoom->minre)/(WIDTH - 1);
+		zoom->im_factor = (zoom->maxim - zoom->minim)/(HEIGHT - 1);
+		draw_mandelbrot(d);
 	}
 	return (0);
 }
-*/
+
+
 int	main(void)
 {
-	t_data	data;
+	t_vars	*data;
+	t_data	*zoom;
 
-	data.mlx = mlx_init();
-	data.win = mlx_new_window(data.mlx, 800, 800, "fractol");
-	data.img = mlx_new_image(data.mlx, 800, 800);
-	data.addr = mlx_get_data_addr(data.img, &data.bits_per_pixel, &data.line_length, &data.endian);
-	draw_mandelbrot(&data);
-	mlx_put_image_to_window(data.mlx, data.win, data.img, 0, 0);
-	mlx_hook(data.win, 17, 0, close_red_cross, &data);
-	mlx_hook(data.win, 3, 0, close_esc, &data);
-	//mlx_hook(data.win, 4, 0, zoom, &data);
-	mlx_loop(data.mlx);
+	data = malloc(sizeof(t_vars));
+	data->mlx = mlx_init();
+	data->win = mlx_new_window(data->mlx, WIDTH, HEIGHT, "fractol");
+	data->img = mlx_new_image(data->mlx, WIDTH, HEIGHT);
+	data->addr = mlx_get_data_addr(data->img, &data->bits_per_pixel, &data->line_length, &data->endian);
+	zoom = malloc(sizeof(t_data));
+	if (!zoom)
+		return (0);
+	declaration(zoom);
+	data->data = zoom;
+	draw_mandelbrot(data);
+	mlx_hook(data->win, 2, 0, close_esc, data);
+	mlx_hook(data->win, 17, 0, close_cross, data);
+	//cursor_coordinate(0, 0, zoom);
+	mlx_hook(data->win, 4, 0, mouse_zoom, data);
+	mlx_loop(data->mlx);
 }
