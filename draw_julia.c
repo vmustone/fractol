@@ -1,34 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   draw_mandelbrot.c                                  :+:      :+:    :+:   */
+/*   draw_julia.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vmustone <vmustone@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/01 12:18:31 by vmustone          #+#    #+#             */
-/*   Updated: 2023/02/27 15:58:19 by vmustone         ###   ########.fr       */
+/*   Created: 2023/02/27 13:47:03 by vmustone          #+#    #+#             */
+/*   Updated: 2023/02/27 16:00:24 by vmustone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-void	declaration(t_data *value)
+static void draw_pixel(t_vars *vars, double z_re, double z_im, int x, int y)
 {
-	value->y = 0;
-	value->x = 0;
-	value->minre = -2.0;
-	value->maxre = 1.0;
-	value->minim = -1.5;
-	value->maxim = 1.5;
-	value->re_factor = (value->maxre - value->minre) / (WIDTH - 1);
-	value->im_factor = (value->maxim - value->minim) / (HEIGHT - 1);
-}
-
-static void draw_pixel(t_vars *vars, double c_re, double c_im, int x, int y)
-{
-	double	z_re = c_re;
-	double	z_im = c_im;
-	double	z_re2, z_im2;
+	double	c_re = 0.0;
+	double	c_im = -0.8;
+	double	z_re2;
+	double	z_im2;
 	int		inside = 1;
 	int		n = 0;
 	int		color = 0x00000000;
@@ -63,15 +52,16 @@ static void draw_row(t_vars *vars, t_data *d, double c_im, int y)
 	double	c_re;
 
 	x = 0;
+	
 	while (x < WIDTH)
 	{
-		c_re = d->minre + x * d->re_factor;
+		c_re = d->minre + (x * d->re_factor);
 		draw_pixel(vars, c_re, c_im, x, y);
 		x++;
 	}
 }
-
-void draw_mandelbrot(t_vars *vars)
+#include <stdio.h>
+void	draw_julia(t_vars *vars)
 {
 	t_data *d;
 	int		y;
@@ -81,9 +71,10 @@ void draw_mandelbrot(t_vars *vars)
 	y = 0;
 	while (y < HEIGHT)
 	{
-		c_im = d->maxim - y * d->im_factor;
+		c_im = d->minim + (y * d->im_factor);
 		draw_row(vars, d, c_im, y);
 		y++;
 	}
+	printf("maxre: %f\tmaxim: %f\nminre: %f\tminim: %f\n", d->maxre, d->maxim, d->minre, d->minim);
 	mlx_put_image_to_window(vars->mlx, vars->win, vars->img, 0, 0);
 }
