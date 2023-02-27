@@ -6,7 +6,7 @@
 #    By: vmustone <vmustone@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/24 16:39:22 by emajuri           #+#    #+#              #
-#    Updated: 2023/02/14 21:54:15 by vmustone         ###   ########.fr        #
+#    Updated: 2023/02/27 14:53:20 by vmustone         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = fractol
 
 LIBFT = libft.a
 
-SRC = main.c
+SRC = main.c controls.c draw_mandelbrot.c draw_julia.c
 
 OSRC = $(SRC:%.c=%.o)
 
