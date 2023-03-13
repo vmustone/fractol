@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vmustone <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: vmustone <vmustone@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:45:40 by vmustone          #+#    #+#             */
-/*   Updated: 2022/11/22 09:43:08 by vmustone         ###   ########.fr       */
+/*   Updated: 2023/03/06 16:20:51 by vmustone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define LIBFT_H
 # include <stdlib.h>
 # include <unistd.h>
+# include <stdarg.h>
 
 typedef struct s_list
 {
@@ -21,6 +22,7 @@ typedef struct s_list
 	struct s_list	*next;
 }					t_list;
 
+double	ft_atof(char *str);
 int		ft_atoi(const char *str);
 void	ft_bzero(void *s, size_t n);
 void	*ft_calloc(size_t count, size_t size);
@@ -45,8 +47,11 @@ char	*ft_strrchr(const char *s, int c);
 int		ft_tolower(int c);
 int		ft_toupper(int c);
 void	ft_putchar_fd(char c, int fd);
+int		ft_putchar_val(char c);
 void	ft_putstr_fd(char *s, int fd);
+int		ft_putstr_val(char *s);
 void	ft_putnbr_fd(int n, int fd);
+int		ft_putnbr_val(int n);
 void	ft_putendl_fd(char *s, int fd);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strjoin(char const *s1, char const *s2);
@@ -64,4 +69,8 @@ void	ft_lstdelone(t_list *lst, void (*del)(void *));
 void	ft_lstclear(t_list **lst, void (*del)(void *));
 void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
+int		ft_putchar_val(char c);
+int		ft_putnbr_val(int n);
+int		ft_putstr_val(char *s);
+int		ft_printf(const char *src, ...);
 #endif
