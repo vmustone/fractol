@@ -6,51 +6,63 @@
 /*   By: vmustone <vmustone@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 12:51:45 by vmustone          #+#    #+#             */
-/*   Updated: 2023/02/27 17:59:05 by vmustone         ###   ########.fr       */
+/*   Updated: 2023/03/08 00:49:01 by vmustone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-void	my_mlx_pixel_put(t_vars *data, int x, int y, int color)
+void	hooks(t_vars *vars)
 {
-	char	*dst;
-
-	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
-	*(unsigned int*) dst = color;
+	mlx_hook(vars->win, 17, 0, close_cross, vars);
+	mlx_key_hook(vars->win, key_controls, vars);
+	mlx_mouse_hook(vars->win, mouse_zoom, vars);
 }
 
-int	main(int argc, char *argv[])
+void	init_mlx(t_vars *vars)
 {
-	t_vars	*data;
-	t_data	*zoom;
+	vars->mlx = mlx_init();
+	vars->win = mlx_new_window(vars->mlx, WIDTH, HEIGHT, "fractol");
+	vars->img = mlx_new_image(vars->mlx, WIDTH, HEIGHT);
+	vars->addr = mlx_get_data_addr(vars->img, &vars->bits_per_pixel, \
+	&vars->line_length, &vars->endian);
+}
 
-	data = malloc(sizeof(t_vars));
-	if (!data)
-		return (0);
-	zoom = malloc(sizeof(t_data));
-	if (!zoom)
-		return (0);
-	declaration(zoom);
-	data->data = zoom;
-	if (argc == 2)
+void	check_fractol(char **argv, t_vars *vars)
+{
+	if ((ft_strncmp(argv[1], "mandelbrot", 10) == 0) && !argv[2])
 	{
-		data->mlx = mlx_init();
-		data->win = mlx_new_window(data->mlx, WIDTH, HEIGHT, "fractol");
-		data->img = mlx_new_image(data->mlx, WIDTH, HEIGHT);
-		data->addr = mlx_get_data_addr(data->img, &data->bits_per_pixel, &data->line_length, &data->endian);
-		if (!ft_strncmp(argv[1], "julia", 5))
-			{
-				draw_julia(data);
-				zoom->set = JULIA;
-			}
-		if (!ft_strncmp(argv[1], "mandelbrot", 10))
-			draw_mandelbrot(data);
+		init_mandel(vars);
+		init_mlx(vars);
+		draw_mandelbrot(vars);
+		vars->set = MANDELBROT;
 	}
-	mlx_hook(data->win, 2, 0, close_esc, data);
-	mlx_hook(data->win, 17, 0, close_cross, data);
-	mlx_hook(data->win, 4, 0, mouse_zoom_down, data);
-	mlx_hook(data->win, 5, 0, mouse_zoom_up, data);
-	mlx_loop(data->mlx);
+	else if ((ft_strncmp(argv[1], "julia", 5) == 0))
+	{
+		init_julia(vars, argv);
+		init_mlx(vars);
+		draw_julia(vars);
+		vars->set = JULIA;
+	}
+	else
+	{
+		ft_printf("Avaible fractols: mandelbrot, julia\n");
+		exit (0);
+	}
+}
+
+int	main(int argc, char **argv)
+{
+	t_vars	vars;
+
+	if (argc < 2 || argc > 4)
+	{
+		ft_printf("Avaible fractols: mandelbrot, julia\n");
+		exit(0);
+	}
+	if (argc > 1)
+		check_fractol(argv, &vars);
+	hooks(&vars);
+	mlx_loop(vars.mlx);
 	return (0);
 }
