@@ -6,7 +6,7 @@
 /*   By: vmustone <vmustone@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/01 12:18:31 by vmustone          #+#    #+#             */
-/*   Updated: 2023/03/08 00:39:00 by vmustone         ###   ########.fr       */
+/*   Updated: 2023/03/23 15:30:42 by vmustone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,7 @@ static void	change_color(t_vars *vars, double c_re, double c_im)
 		vars->z_re2 = vars->z_re * vars->z_re;
 		vars->z_im2 = vars->z_im * vars->z_im;
 		if (vars->z_re2 + vars->z_im2 > 4)
-		{
-			vars->inside = 0;
 			break ;
-		}
 		vars->z_im = 2 * vars->z_re * vars->z_im + c_im;
 		vars->z_re = vars->z_re2 - vars->z_im2 + c_re;
 		vars->iter_count++;
@@ -33,7 +30,7 @@ static void	change_color(t_vars *vars, double c_re, double c_im)
 	if (vars->iter_count == MAX_ITER)
 		my_mlx_pixel_put(vars, 0x00000000);
 	else
-		my_mlx_pixel_put(vars, 0x00003300 * vars->iter_count);
+		my_mlx_pixel_put(vars, (0x00ffff / 0x0ff * 6) * vars->iter_count);
 }
 
 static void	draw_row(t_vars *vars, double c_im)

@@ -6,7 +6,7 @@
 /*   By: vmustone <vmustone@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 12:51:45 by vmustone          #+#    #+#             */
-/*   Updated: 2023/03/08 00:49:01 by vmustone         ###   ########.fr       */
+/*   Updated: 2023/03/23 22:27:50 by vmustone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,14 @@ void	init_mlx(t_vars *vars)
 
 void	check_fractol(char **argv, t_vars *vars)
 {
-	if ((ft_strncmp(argv[1], "mandelbrot", 10) == 0) && !argv[2])
+	if (ft_strcmp(argv[1], "mandelbrot") == 0 && !argv[2])
 	{
 		init_mandel(vars);
 		init_mlx(vars);
 		draw_mandelbrot(vars);
 		vars->set = MANDELBROT;
 	}
-	else if ((ft_strncmp(argv[1], "julia", 5) == 0))
+	else if ((ft_strcmp(argv[1], "julia") == 0))
 	{
 		init_julia(vars, argv);
 		init_mlx(vars);

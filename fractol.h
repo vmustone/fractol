@@ -6,7 +6,7 @@
 /*   By: vmustone <vmustone@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 12:51:36 by vmustone          #+#    #+#             */
-/*   Updated: 2023/03/08 01:00:13 by vmustone         ###   ########.fr       */
+/*   Updated: 2023/03/23 14:21:47 by vmustone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define FRACTOL_H
 # define WIDTH 800
 # define HEIGHT 800
-# define MAX_ITER 100
+# define MAX_ITER 125
 # include "libft/libft.h"
 # include <mlx.h>
 
@@ -39,8 +39,10 @@ typedef struct s_vars
 {
 	int				x;
 	int				y;
-	int				inside;
 	int				iter_count;
+	int				bits_per_pixel;
+	int				line_length;
+	int				endian;
 	double			minre;
 	double			maxre;
 	double			minim;
@@ -53,16 +55,13 @@ typedef struct s_vars
 	double			z_im;
 	double			z_re2;
 	double			z_im2;
-	unsigned char	set;
 	double			julia_c;
 	double			julia_i;
 	void			*mlx;
 	void			*win;
 	void			*img;
 	char			*addr;
-	int				bits_per_pixel;
-	int				line_length;
-	int				endian;
+	unsigned char	set;
 }					t_vars;
 
 void	init_mandel(t_vars *data);

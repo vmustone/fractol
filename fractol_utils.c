@@ -6,7 +6,7 @@
 /*   By: vmustone <vmustone@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 15:52:56 by vmustone          #+#    #+#             */
-/*   Updated: 2023/03/08 00:49:34 by vmustone         ###   ########.fr       */
+/*   Updated: 2023/03/23 14:23:07 by vmustone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ void	my_mlx_pixel_put(t_vars *vars, int color)
 
 void	init_mandel(t_vars *vars)
 {
-	vars->inside = 1;
 	vars->minre = -2.0;
 	vars->maxre = 1.0;
 	vars->minim = -1.5;
@@ -34,7 +33,6 @@ void	init_mandel(t_vars *vars)
 
 void	init_julia(t_vars *vars, char **argv)
 {
-	vars->inside = 1;
 	vars->minre = -2.0;
 	vars->maxre = 2.0;
 	vars->minim = -1.5;
