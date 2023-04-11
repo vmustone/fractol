@@ -6,7 +6,7 @@
 /*   By: vmustone <vmustone@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 18:41:17 by vmustone          #+#    #+#             */
-/*   Updated: 2023/03/02 18:49:37 by vmustone         ###   ########.fr       */
+/*   Updated: 2023/04/04 19:48:31 by vmustone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ double	decimal(int count)
 	ret = 1.0;
 	while (count != 0)
 	{
-		ret = 10;
+		ret *= 10;
 		count--;
 	}
 	return (ret);
